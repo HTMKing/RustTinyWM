@@ -1,3 +1,10 @@
+extern crate x11;
+
+use std::ptr;
+use x11::xlib;
+
 fn main() {
-    println!("Hello, world!");
+    let mut dpy = unsafe { xlib::XOpenDisplay(ptr::null_mut()) };
+
+
 }
