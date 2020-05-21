@@ -25,4 +25,6 @@ fn main() {
         XGrabButton(dpy, 3, Mod1Mask, XDefaultRootWindow(dpy), 1,
             (ButtonPressMask|ButtonReleaseMask|PointerMotionMask) as u32, GrabModeAsync, GrabModeAsync, 0, 0);
     }
+
+
 }
