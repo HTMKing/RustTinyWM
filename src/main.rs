@@ -1,6 +1,7 @@
 extern crate x11;
 
 use std::ffi::CString;
+use std::mem::zeroed;
 use std::ptr;
 
 use x11::xlib::*;
@@ -10,10 +11,11 @@ unsafe fn str_to_cstr(x: &str) -> *const i8 {
 }
 
 fn main() {
-    let mut dpy: *mut Display = unsafe { XOpenDisplay(ptr::null_mut()) };
-    let mut start: XButtonEvent = XButtonEvent{..};
+    let dpy: *mut Display = unsafe { XOpenDisplay(ptr::null_mut()) };
+    let mut attr: XWindowAttributes = unsafe { zeroed() };
+    let mut start: XButtonEvent = unsafe { zeroed() };
 
-    if dpy == ptr::null_mut() {
+    if dpy.is_null() {
         panic!("Can\'t start X server!");
     }
 
@@ -55,7 +57,19 @@ fn main() {
 
     start.subwindow = 0;
 
+    let mut ev: XEvent = unsafe { zeroed() };
     loop {
-        
+        unsafe {
+            XNextEvent(dpy, &mut ev);
+
+            if ev.type_ == KeyPress && ev.key.subwindow != 0 {
+                XRaiseWindow(dpy, ev.key.subwindow);
+            }
+            else if ev.type_ == ButtonPress && ev.button.subwindow != 0 {
+                XGetWindowAttributes(dpy, ev.button.subwindow, &attr);
+                start = ev.button;
+            }
+            
+        }
     }
 }
